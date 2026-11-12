@@ -1,0 +1,61 @@
+using System.Diagnostics.Contracts;
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class StateMachine : MonoBehaviour
+{
+
+    public BaseState activeState;
+    public PatrolState patrolState;
+    public void Initialise()
+    {
+        //setup default state.
+        patrolState = new PatrolState();
+        ChangeState(patrolState);
+    }
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        //check activeState !=null
+        if (activeState != null)
+        {
+            //run cleanup on activeState
+            activeState.Perform();
+        }
+
+    }
+
+    public void ChangeState(BaseState newState)
+    {
+        //check activeState !=null
+        if (activeState != null)
+        {
+            //run cleanup on activeState            
+            activeState.Exit();
+        }
+        //change to a new state.
+        activeState = newState;
+
+        //fail-safe null chack to make sure new state wasn't null.
+
+        if (activeState != null)
+        {
+            //run cleanup on activeState    
+            activeState.stateMachine = this;
+
+            activeState.enemy = GetComponent<Enemy>();
+
+            activeState.Enter();
+
+        }
+       
+    }
+}
